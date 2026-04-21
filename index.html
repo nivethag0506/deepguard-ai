@@ -157,6 +157,32 @@
                     </tbody>
                 </table>
             </div>
+        <section class="performance-section full-width">
+            <h2>Model Performance Metrics</h2>
+            <div class="metrics-grid">
+                <div class="roc-container metric-box">
+                    <h3>ROC Curve (AUC = 0.94)</h3>
+                    <div class="chart-container chart-small">
+                        <canvas id="rocChart"></canvas>
+                    </div>
+                </div>
+                <div class="confusion-container metric-box">
+                    <h3>Confusion Matrix (Test Set)</h3>
+                    <div class="matrix">
+                        <div class="matrix-cell header-col"></div>
+                        <div class="matrix-cell header-col">Pred Non-Fraud</div>
+                        <div class="matrix-cell header-col">Pred Fraud</div>
+                        
+                        <div class="matrix-cell header-row">Actual Non-Fraud</div>
+                        <div class="matrix-cell value true-negative">850 (TN)</div>
+                        <div class="matrix-cell value false-positive">45 (FP)</div>
+                        
+                        <div class="matrix-cell header-row">Actual Fraud</div>
+                        <div class="matrix-cell value false-negative">12 (FN)</div>
+                        <div class="matrix-cell value true-positive">93 (TP)</div>
+                    </div>
+                </div>
+            </div>
         </section>
     </div>
 
@@ -237,6 +263,18 @@
         th, td { padding: 1rem; border-bottom: 1px solid var(--surface-border); font-size: 0.95rem; }
         th { color: var(--text-secondary); font-weight: 600; }
         .empty-row td { text-align: center; color: var(--text-secondary); padding: 2rem; }
+        
+        .performance-section { background: rgba(0, 0, 0, 0.2); border-radius: 16px; padding: 2rem; border: 1px solid var(--surface-border); }
+        .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+        .metric-box h3 { font-size: 1rem; color: var(--text-secondary); margin-bottom: 1rem; }
+        .matrix { display: grid; grid-template-columns: 120px 1fr 1fr; gap: 0.5rem; background: var(--surface); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--surface-border); }
+        .matrix-cell { padding: 1rem; border-radius: 8px; text-align: center; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; }
+        .matrix-cell.header-col { color: var(--text-secondary); font-weight: 600; }
+        .matrix-cell.header-row { color: var(--text-secondary); font-weight: 600; text-align: right; justify-content: flex-end; }
+        .true-negative { background: rgba(16, 185, 129, 0.2); color: var(--success); border: 1px solid var(--success); font-weight: 600; }
+        .true-positive { background: rgba(16, 185, 129, 0.2); color: var(--success); border: 1px solid var(--success); font-weight: 600; }
+        .false-positive { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); font-weight: 600; }
+        .false-negative { background: rgba(245, 158, 11, 0.2); color: var(--warning); border: 1px solid var(--warning); font-weight: 600; }
         
         .hidden { display: none !important; }
         .loader-spinner { width: 20px; height: 20px; border: 3px solid rgba(0,0,0,0.3); border-radius: 50%; border-top-color: #000; animation: spin 1s ease-in-out infinite; }

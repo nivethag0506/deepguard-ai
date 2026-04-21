@@ -243,7 +243,8 @@ document.addEventListener('DOMContentLoaded', () => {
         loader.classList.remove('hidden');
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/predict', {
+            // Attempt to call the live Render Python Backend
+            const response = await fetch('https://deepguard-ai-6o3k.onrender.com/predict', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(rawData)

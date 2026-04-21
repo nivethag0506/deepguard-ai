@@ -22,26 +22,18 @@ document.addEventListener('DOMContentLoaded', () => {
     Chart.defaults.color = '#94a3b8';
     Chart.defaults.font.family = 'Inter';
 
-    // --- 1. Radar Chart (Live Claim Context) ---
-    const radarCtx = document.getElementById('claimRadarChart').getContext('2d');
-    const claimRadarChart = new Chart(radarCtx, {
-        type: 'radar',
+    // --- 1. Bar Chart (Live Claim Context) ---
+    const barCtx = document.getElementById('claimBarChart').getContext('2d');
+    const claimBarChart = new Chart(barCtx, {
+        type: 'bar',
         data: {
-            labels: ['Claim Amount', 'Past Claims', 'Severity Level'],
+            labels: ['Historical Avg', 'Current Claim'],
             datasets: [
                 {
-                    label: 'Historical Average',
-                    data: [0.5, 0.4, 0.3], // Normalized 0-1
-                    backgroundColor: 'rgba(79, 172, 254, 0.2)',
-                    borderColor: 'rgba(79, 172, 254, 1)',
-                    pointBackgroundColor: 'rgba(79, 172, 254, 1)',
-                },
-                {
-                    label: 'Current Claim',
-                    data: [0, 0, 0],
-                    backgroundColor: 'rgba(239, 68, 68, 0.4)',
-                    borderColor: 'rgba(239, 68, 68, 1)',
-                    pointBackgroundColor: 'rgba(239, 68, 68, 1)',
+                    label: 'Risk Anomaly Score',
+                    data: [0.3, 0], // Normalized 0-1
+                    backgroundColor: ['rgba(79, 172, 254, 0.4)', 'rgba(239, 68, 68, 0.8)'],
+                    borderRadius: 4
                 }
             ]
         },
@@ -49,15 +41,11 @@ document.addEventListener('DOMContentLoaded', () => {
             responsive: true,
             maintainAspectRatio: false,
             scales: {
-                r: {
-                    angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
-                    grid: { color: 'rgba(255, 255, 255, 0.1)' },
-                    pointLabels: { color: '#ffffff', font: { size: 12 } },
-                    ticks: { display: false, min: 0, max: 1 }
-                }
+                y: { min: 0, max: 1, grid: { color: 'rgba(255, 255, 255, 0.05)' } },
+                x: { grid: { display: false } }
             },
             plugins: {
-                legend: { position: 'top', labels: { color: '#ffffff' } }
+                legend: { display: false }
             }
         }
     });
@@ -188,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
             warningBanner.classList.add('hidden');
         }
 
-        // Radar Chart Normalization (0-1)
+        // Chart Normalization (0-1)
         const normAmount = Math.min(amount / 80000, 1);
         const normPastClaims = Math.min(pastClaims / 5, 1);
         
@@ -198,18 +186,16 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (severity === "Major") normSeverity = 0.75;
         else if (severity === "Total Loss") normSeverity = 1.0;
 
-        claimRadarChart.data.datasets[1].data = [normAmount, normPastClaims, normSeverity];
-        
-        // Change color based on overall input anomaly amount
+        // Bar Chart Update
         const avgInputs = (normAmount + normPastClaims + normSeverity) / 3;
+        claimBarChart.data.datasets[0].data = [0.3, avgInputs];
+        
         if (avgInputs > 0.6) {
-            claimRadarChart.data.datasets[1].backgroundColor = 'rgba(239, 68, 68, 0.4)';
-            claimRadarChart.data.datasets[1].borderColor = 'rgba(239, 68, 68, 1)';
+            claimBarChart.data.datasets[0].backgroundColor[1] = 'rgba(239, 68, 68, 0.8)';
         } else {
-            claimRadarChart.data.datasets[1].backgroundColor = 'rgba(16, 185, 129, 0.4)';
-            claimRadarChart.data.datasets[1].borderColor = 'rgba(16, 185, 129, 1)';
+            claimBarChart.data.datasets[0].backgroundColor[1] = 'rgba(16, 185, 129, 0.8)';
         }
-        claimRadarChart.update();
+        claimBarChart.update();
     }
 
     // Auto Fill Data

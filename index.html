@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
     <div class="background-animation"></div>
@@ -95,7 +95,8 @@
                 <section class="dashboard-section" id="live-context-section">
                     <h2 id="dashboard-title">Live Claim Context</h2>
                     <div class="chart-container" id="chart-wrapper">
-                        <canvas id="claimRadarChart"></canvas>
+                        <!-- Bar chart matches the old output -->
+                        <canvas id="claimBarChart"></canvas>
                     </div>
                 </section>
 
@@ -157,35 +158,90 @@
                 </table>
             </div>
         </section>
-
-        <section class="performance-section full-width">
-            <h2>Model Performance Metrics</h2>
-            <div class="metrics-grid">
-                <div class="roc-container metric-box">
-                    <h3>ROC Curve (AUC = 0.94)</h3>
-                    <div class="chart-container chart-small">
-                        <canvas id="rocChart"></canvas>
-                    </div>
-                </div>
-                <div class="confusion-container metric-box">
-                    <h3>Confusion Matrix (Test Set)</h3>
-                    <div class="matrix">
-                        <div class="matrix-cell header-col"></div>
-                        <div class="matrix-cell header-col">Pred Non-Fraud</div>
-                        <div class="matrix-cell header-col">Pred Fraud</div>
-                        
-                        <div class="matrix-cell header-row">Actual Non-Fraud</div>
-                        <div class="matrix-cell value true-negative">850 (TN)</div>
-                        <div class="matrix-cell value false-positive">45 (FP)</div>
-                        
-                        <div class="matrix-cell header-row">Actual Fraud</div>
-                        <div class="matrix-cell value false-negative">12 (FN)</div>
-                        <div class="matrix-cell value true-positive">93 (TP)</div>
-                    </div>
-                </div>
-            </div>
-        </section>
     </div>
+
+    <!-- Embedding CSS Directly Here to Guarantee 100% Vercel Compatibility -->
+    <style>
+        :root {
+            --primary-color: #4facfe;
+            --secondary-color: #00f2fe;
+            --background: #0b0f19;
+            --surface: rgba(255, 255, 255, 0.05);
+            --surface-border: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: #0d1117; color: var(--text-primary); min-height: 100vh; display: flex; justify-content: center; align-items: center; overflow-x: hidden; padding: 2rem 0; }
+        .background-animation { position: fixed; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 50% 50%, rgba(79, 172, 254, 0.12) 0%, rgba(0, 0, 0, 0) 50%); z-index: -1; pointer-events: none; }
+        
+        .app-container { width: 100%; max-width: 1200px; margin: 0 2rem; padding: 2.5rem; background: #161b22; backdrop-filter: blur(24px); border: 1px solid var(--surface-border); border-radius: 20px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); display: flex; flex-direction: column; gap: 2.5rem; }
+        .app-header { text-align: center; }
+        .logo { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 0.5rem; }
+        .logo h1 { font-size: 2.2rem; font-weight: 700; letter-spacing: -0.5px; }
+        .logo span { background: linear-gradient(to right, var(--primary-color), var(--secondary-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .subtitle { color: var(--text-secondary); font-size: 1rem; font-weight: 400; }
+        
+        .main-content { display: grid; grid-template-columns: 1fr 1.1fr; gap: 3rem; }
+        .left-panel, .right-panel { display: flex; flex-direction: column; gap: 1.5rem; }
+        
+        section h2 { font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--surface-border); }
+        .form-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--surface-border); }
+        .form-header-row h2 { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+        
+        .secondary-btn { background: rgba(79, 172, 254, 0.2); color: var(--primary-color); border: 1px solid var(--primary-color); padding: 0.4rem 1rem; border-radius: 8px; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: all 0.3s ease; }
+        .secondary-btn:hover { background: rgba(79, 172, 254, 0.4); }
+        
+        .error-banner { background: rgba(239, 68, 68, 0.15); border: 1px solid var(--danger); border-left: 4px solid var(--danger); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; }
+        .warning-banner { background: rgba(245, 158, 11, 0.15); border: 1px solid var(--warning); border-left: 4px solid var(--warning); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; }
+        
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 2rem; }
+        .input-group { display: flex; flex-direction: column; gap: 0.5rem; }
+        .input-group label { font-size: 0.85rem; font-weight: 500; color: var(--text-secondary); }
+        .input-group input, .input-group select { background: rgba(0, 0, 0, 0.2); border: 1px solid var(--surface-border); border-radius: 12px; padding: 0.85rem 1rem; color: var(--text-primary); font-family: inherit; font-size: 0.95rem; outline: none; }
+        .input-group input:focus, .input-group select:focus { border-color: var(--primary-color); box-shadow: 0 0 0 2px rgba(79, 172, 254, 0.2); }
+        option { background: #1e293b; color: white; }
+        
+        .submit-btn, .reset-btn { width: 100%; padding: 1rem; border: none; border-radius: 12px; font-family: inherit; font-weight: 600; font-size: 1rem; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 0.75rem; }
+        .submit-btn { background: linear-gradient(135deg, #00f2fe, #4facfe); color: #000; box-shadow: 0 5px 15px rgba(79, 172, 254, 0.3); }
+        .submit-btn:hover { opacity: 0.9; }
+        .reset-btn { background: rgba(255, 255, 255, 0.05); color: var(--text-primary); border: 1px solid var(--surface-border); margin-top: 1.5rem; }
+        
+        .chart-container { background: rgba(0, 0, 0, 0.2); border-radius: 16px; padding: 1.5rem; border: 1px solid var(--surface-border); width: 100%; }
+        .chart-container canvas { width: 100% !important; max-height: 250px; }
+        .chart-small canvas { max-height: 180px; }
+        
+        .results-section { background: rgba(0, 0, 0, 0.2); border-radius: 16px; padding: 2rem; border: 1px solid var(--surface-border); }
+        .score-card { display: flex; align-items: center; gap: 2rem; margin-bottom: 2rem; }
+        .gauge-container { width: 160px; height: 100px; position: relative; display: flex; justify-content: center; }
+        .gauge-text { position: absolute; bottom: 5px; font-size: 1.5rem; font-weight: 700; }
+        .score-details h3 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+        .score-details p { color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 1rem; }
+        
+        .decision-box { display: inline-block; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600; font-size: 0.9rem; }
+        .decision-approve { background: rgba(16, 185, 129, 0.2); color: var(--success); border: 1px solid var(--success); }
+        .decision-review { background: rgba(245, 158, 11, 0.2); color: var(--warning); border: 1px solid var(--warning); }
+        .decision-reject { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); }
+        
+        .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; border-top: 1px solid var(--surface-border); padding-top: 1.5rem; }
+        .metric-item { display: flex; flex-direction: column; gap: 0.25rem; padding: 1rem; background: var(--surface); border-radius: 12px; }
+        .metric-item .label { font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; }
+        .metric-item .value { font-size: 1.25rem; font-weight: 600; }
+        
+        .full-width { width: 100%; margin-top: 1rem; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 1rem; border-bottom: 1px solid var(--surface-border); font-size: 0.95rem; }
+        th { color: var(--text-secondary); font-weight: 600; }
+        .empty-row td { text-align: center; color: var(--text-secondary); padding: 2rem; }
+        
+        .hidden { display: none !important; }
+        .loader-spinner { width: 20px; height: 20px; border: 3px solid rgba(0,0,0,0.3); border-radius: 50%; border-top-color: #000; animation: spin 1s ease-in-out infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="script.js"></script>

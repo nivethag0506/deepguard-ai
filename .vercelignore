@@ -1,0 +1,8 @@
+app.py
+requirements.txt
+fraud_model.keras
+insurance_claims_dataset.csv
+backend/
+frontend/
+*.py
+*.keras
